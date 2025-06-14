@@ -1,0 +1,4 @@
+/// <reference types="vite/client" />
+
+
+VITE_API_URL=https://extra-brooke-yeremiadio-46b2183e.koyeb.app

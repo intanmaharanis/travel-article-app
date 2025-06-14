@@ -1,0 +1,50 @@
+import  { useEffect } from "react";
+import { useArticleStore } from "../../../stores/articleStore";
+import { useCategoryStore } from "../../../stores/categoryStore";
+import { Plane, Map, Heart } from "lucide-react";
+import ArticlesCard from "../../articles/components/ArticlesCard";
+
+export default function DestinationSection() {
+  const { articles, fetchArticles, loading } = useArticleStore();
+  const {  fetchAllData: fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchArticles();
+    fetchCategories();
+  }, [fetchArticles, fetchCategories]);
+
+  const displayedArticles = articles.slice(0,4);
+
+
+
+  return (
+    <section className="py-20 px-4 bg-lime-100 relative overflow-hidden mx-10 rounded-xl shadow mb-16">
+      <div className="absolute top-20 left-20 opacity-20 transform -rotate-12">
+        <Map size={75} className="text-400" />
+      </div>
+      <div className="absolute top-10 right-10 opacity-20 transform rotate-12">
+        <Plane size={75} className="text-400" />
+      </div>
+      <div className="absolute bottom-10 right-10 opacity-20 transform -rotate-12">
+        <Heart size={75} className="text-400" />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-12">
+          <h4 className="text-sm font-semibold text-red-500 uppercase mb-2">Top Destinations</h4>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900">The best destinations</h2>
+        </div>
+
+        <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {displayedArticles.map((article) => (
+              <ArticlesCard article={article}/>
+            ))}
+          </div>
+
+          
+        </div>
+      </div>
+    </section>
+  );
+} 

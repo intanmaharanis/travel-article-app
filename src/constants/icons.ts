@@ -1,0 +1,53 @@
+import type { LucideIcon } from 'lucide-react';
+import {
+  Activity,
+  Compass,
+  Globe,
+  MapPin,
+  Plane,
+  Book,
+  Heart,
+  Star,
+  Sun,
+  Users,
+  Anchor,
+  Camera,
+  Gift,
+  Home,
+  Key,
+  MessageSquare,
+  Palette,
+  Phone,
+  ShoppingCart,
+  Ticket,
+  Zap,
+  ZoomIn,
+} from 'lucide-react';
+
+export const getRandomIcon = (index: number): LucideIcon => {
+  const icons: LucideIcon[] = [
+    Activity,
+    Compass,
+    Globe,
+    MapPin,
+    Plane,
+    Book,
+    Heart,
+    Star,
+    Sun,
+    Users,
+    Anchor,
+    Camera,
+    Gift,
+    Home,
+    Key,
+    MessageSquare,
+    Palette,
+    Phone,
+    ShoppingCart,
+    Ticket,
+    Zap,
+    ZoomIn,
+  ];
+  return icons[index % icons.length];
+}; 
