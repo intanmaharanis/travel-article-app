@@ -52,7 +52,7 @@ export const articleApi = {
     return handleResponse<any>(res);
   },
 
-  async createCategory(payload: { name: string }): Promise<ApiResponse<Category>> {
+  async createCategory(payload: { name: string; description: string }): Promise<ApiResponse<Category>> {
     const res = await fetch(`${API_BASE_URL}/api/categories`, {
       method: 'POST',
       headers: getAuthHeaders(),
@@ -61,7 +61,7 @@ export const articleApi = {
     return handleResponse<ApiResponse<Category>>(res);
   },
 
-  async updateCategory(id: string, payload: { name?: string }): Promise<ApiResponse<Category>> {
+  async updateCategory(id: string, payload: { name?: string; description?: string }): Promise<ApiResponse<Category>> {
     const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
@@ -70,7 +70,7 @@ export const articleApi = {
     return handleResponse<ApiResponse<Category>>(res);
   },
 
-  async deleteCategory(id: number): Promise<any> {
+  async deleteCategory(id: string): Promise<any> {
     const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()

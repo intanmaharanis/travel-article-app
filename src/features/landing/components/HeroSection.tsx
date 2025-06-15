@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { _HERO } from "../../../constants/landingPage";
 
@@ -6,9 +5,17 @@ import { _HERO } from "../../../constants/landingPage";
 export default function HeroSection() {
   return (
     <div
-      className={`relative pt-20 min-h-screen flex items-center justify-center bg-cover bg-center bg-[url("${_HERO.bgImage}")]`}
+      className={`relative pt-20 min-h-screen flex items-center justify-center]`}
     >
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <img
+        src={_HERO.bgImage}
+        alt="Gunung"
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-transparent z-10" />
+
+
+      <div className="absolute inset-0 bg-black opacity-50"/>
 
       <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
         <h2 className="text-xl md:text-2xl font-semibold mb-4 text-purple-300">
@@ -23,12 +30,11 @@ export default function HeroSection() {
         </p>
         <div className="flex gap-1 w-full gap-4 justify-center my-4">
         {
-          _HERO.images.map((img, i) => (
-            <div className="w-40 h-40 rounded-xl overflow-hidden transition-all duration-300 hover:rounded-r-2xl">
+          _HERO.images.map((img, index) => (
+            <div className="w-40 h-40 rounded-xl overflow-hidden transition-all duration-300 hover:rounded-r-2xl" key={index}>
                <img
                 src={img}
-                key={i}
-                alt={`image-${i}`}
+                alt={`image-${index}`}
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105 hover:rounded-r-2xl"
               />
             </div>

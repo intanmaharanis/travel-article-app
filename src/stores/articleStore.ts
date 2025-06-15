@@ -40,10 +40,16 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
     try {
       const response = await articleApi.getArticles(categoryName, page, pageSize, searchTerm);
       const articles = (response as ApiResponse<Article[]>).data;
+
+      console.log(response);
+
+      // Manually sort articles by createdAt in descending order
+      const sortedArticles = articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
       const pagination = response.meta?.pagination;
 
       set({
-        articles,
+        articles: sortedArticles,
         currentPage: pagination?.page || 1,
         pageSize: pagination?.pageSize || 10,
         totalArticles: pagination?.total || 0,

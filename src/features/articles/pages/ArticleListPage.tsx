@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { useArticleStore } from "../../../stores/articleStore";
 import { useCategoryStore } from "../../../stores/categoryStore";
-import Spinner from "../../../components/ui/spinner";
 import { useAuth } from "../../../hooks/useAuth";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -13,27 +12,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../../../components/ui/alert-dialog";
-import { Filter, Search, PlusCircle } from "lucide-react";
+import { Filter, Search, PlusCircle, Loader2Icon } from "lucide-react";
 import ArticlesCard from "../components/ArticlesCard";
 import ArticleFormModal from '../components/ArticleFormModal';
 import type { Article } from '../../../types/article';
 import type { ArticleFormValues } from '../components/ArticleFormModal';
 import { toast } from "sonner";
+import ConfirmDeleteDialog from '../../../components/ConfirmDeleteDialog';
 
 export default function ArticleListPage() {
   const { articles, fetchArticles, loading, currentPage, totalPages, setCurrentPage, createArticle, updateArticle, deleteArticle, pageSize } = useArticleStore();
   const { categories, fetchAllData: fetchCategories } = useCategoryStore();
   const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
@@ -78,8 +69,12 @@ export default function ArticleListPage() {
   };
 
   const handleCreateClick = () => {
-    setEditingArticle(null);
-    setIsModalOpen(true);
+    if (isAuthenticated) {
+      setEditingArticle(null);
+      setIsModalOpen(true);
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleEditClick = (articleId: string) => {
@@ -101,9 +96,9 @@ export default function ArticleListPage() {
         await deleteArticle(articleToDeleteId);
         toast.success('Article deleted successfully');
         fetchArticles(selectedCategoryId, currentPage, pageSize, debouncedSearchTerm);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting article:', error);
-        toast.error('Failed to delete article');
+        toast.error(error.message || 'Failed to delete article');
       } finally {
         setIsDeleteDialogOpen(false);
         setArticleToDeleteId(null);
@@ -130,14 +125,6 @@ export default function ArticleListPage() {
       setIsSubmitting(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen py-16">
-        <Spinner />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-12 px-4">
@@ -171,15 +158,19 @@ export default function ArticleListPage() {
               </SelectContent>
             </Select>
           </div>
-          {isAuthenticated && ( 
-            <Button onClick={handleCreateClick} className="bg-purple-600 hover:bg-purple-700 text-white flex items-center px-6 py-2 rounded-md">
-              <PlusCircle size={20} className="mr-2" />
-              Create New Article
-            </Button>
-          )}
+          
+          <Button onClick={handleCreateClick} className="bg-purple-600 hover:bg-purple-700 text-white flex items-center px-6 py-2 rounded-md">
+            <PlusCircle size={20} className="mr-2" />
+            Create New Article
+          </Button>
+
         </div>
 
-        {articles.length === 0 && !loading ? (
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader2Icon className="animate-spin w-10 h-10 text-gray-500" />
+          </div>
+        ) : articles.length === 0 ? (
           <p className="text-center text-gray-600 text-xl mt-12">No articles found for the current filters.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -197,21 +188,21 @@ export default function ArticleListPage() {
         )}
 
         {totalPages > 1 && (
-          <div className="flex justify-center mt-12 space-x-4">
+          <div className="flex justify-center items-center space-x-4 mt-8">
             <Button
               onClick={handlePrevPage}
               disabled={currentPage === 1 || loading}
-              className="px-6 py-2 bg-purple-600 text-white rounded-md disabled:opacity-50 hover:bg-purple-700"
+              variant="outline"
+              size="sm"
             >
               Previous
             </Button>
-            <span className="px-4 py-2 text-gray-700">
-              Page {currentPage} of {totalPages}
-            </span>
+            <span className="text-gray-700">Page {currentPage} of {totalPages}</span>
             <Button
               onClick={handleNextPage}
               disabled={currentPage === totalPages || loading}
-              className="px-6 py-2 bg-purple-600 text-white rounded-md disabled:opacity-50 hover:bg-purple-700"
+              variant="outline"
+              size="sm"
             >
               Next
             </Button>
@@ -221,26 +212,20 @@ export default function ArticleListPage() {
         <ArticleFormModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          editingArticle={editingArticle}
           onSubmit={onSubmit}
+          editingArticle={editingArticle}
           isSubmitting={isSubmitting}
-          loading={isSubmitting}
+          loading={loading}
         />
 
-        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete your article.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={confirmDeleteArticle}>Continue</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={confirmDeleteArticle}
+          itemType="article"
+          itemName={articles.find(article => article.documentId === articleToDeleteId)?.title || 'this article'}
+        />
+
       </div>
     </div>
   );

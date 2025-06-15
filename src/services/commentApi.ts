@@ -30,8 +30,8 @@ export const commentApi = {
     return handleResponse<ApiResponse<Comment>>(res);
   },
 
-  async updateComment(id: number, payload: UpdateCommentPayload): Promise<ApiResponse<Comment>> {
-    const res = await fetch(`${API_BASE_URL}/api/comments/${id}`, {
+  async updateComment(documentId: string, payload: UpdateCommentPayload): Promise<ApiResponse<Comment>> {
+    const res = await fetch(`${API_BASE_URL}/api/comments/${documentId}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify({ data: payload }),
@@ -39,8 +39,8 @@ export const commentApi = {
     return handleResponse<ApiResponse<Comment>>(res);
   },
 
-  async deleteComment(id: number): Promise<ApiResponse<Comment>> {
-    const res = await fetch(`${API_BASE_URL}/api/comments/${id}`, {
+  async deleteComment(documentId: string): Promise<ApiResponse<Comment>> {
+    const res = await fetch(`${API_BASE_URL}/api/comments/${documentId}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });

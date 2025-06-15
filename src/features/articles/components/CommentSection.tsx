@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Send } from 'lucide-react';
+import { Send, Loader2Icon } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Textarea } from '../../../components/ui/textarea';
 import { toast } from 'sonner';
 import { commentApi } from '../../../services/commentApi';
 import type { Comment } from '../../../types/comment';
 import CommentComponent from './Comment';
-import Spinner from '../../../components/ui/spinner';
 
 interface CommentSectionProps {
   articleId: number;
@@ -15,7 +14,7 @@ interface CommentSectionProps {
   commentsCurrent: Comment[];
   onCommentAdded: (newComment: Comment) => void;
   onCommentUpdated: (updatedComment: Comment) => void;
-  onCommentDeleted: (commentId: number) => void;
+  onCommentDeleted: (commentId: string) => void;
 }
 
 export default function CommentSection({
@@ -70,7 +69,9 @@ export default function CommentSection({
   if (loadingComments) {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-8 flex justify-center items-center h-48">
-        <Spinner />
+        <div className="flex justify-center items-center h-20">
+          <Loader2Icon className="animate-spin w-8 h-8 text-gray-500" />
+        </div>
       </div>
     );
   }
@@ -97,13 +98,13 @@ export default function CommentSection({
               className="bg-purple-600 hover:bg-purple-700"
             >
               {isSubmitting ? (
-                <div className="w-5 h-5 mr-2">
-                  <Spinner />
+                <div className="flex items-center justify-center w-full">
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Posting...
                 </div>
               ) : (
-                <Send size={20} className="mr-2" />
+                <>Send <Send size={20} className="ml-2" /></>
               )}
-              Post Comment
             </Button>
           </div>
         </form>

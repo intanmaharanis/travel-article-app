@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { useCategoryStore } from "../../../stores/categoryStore";
-import CategoryCard from "../../../components/CategoryCard";
+import CategoryCard from "../../categories/components/CategoryCard";
 import { getRandomIcon } from "../../../constants/icons";
+import { ArrowRight } from 'lucide-react';
 
 export default function CategorySection() {
   const { categories, fetchAllData } = useCategoryStore();
@@ -28,12 +29,10 @@ export default function CategorySection() {
             </p>
           </div>
           <div className="flex space-x-2">
-            <button className="p-3 bg-lime-200 rounded-lg text-lime-800 hover:bg-lime-300 transition">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            <button className="p-3 bg-lime-200 rounded-lg text-lime-800 hover:bg-lime-300 transition">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </button>
+            <a href="/categories" className="p-3 text-lime-800 hover:text-lime-600 transition flex items-center">
+              View More <ArrowRight className="ml-1 w-4 h-4" />
+            </a>
+            
           </div>
         </div>
 

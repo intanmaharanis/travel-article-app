@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../../../components/ui/textarea';
 import { useCategoryStore } from '../../../stores/categoryStore';
 import type { Article } from '../../../types/article';
-import Spinner from '../../../components/ui/spinner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../../../components/ui/dialog';
+import { Loader2Icon } from 'lucide-react';
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
@@ -58,7 +58,12 @@ export default function ArticleFormModal({
             category: editingArticle.category.id,
           });
         } else {
-          reset();
+          reset({
+            title: '',
+            description: '',
+            cover_image_url: '',
+            category: undefined,
+          });
         }
       }
     } else {
@@ -97,8 +102,6 @@ export default function ArticleFormModal({
               name="category"
               control={control}
               render={({ field }) => {
-                console.log('Controller field.value:', field.value);
-                console.log('Controller categories:', categories);
                 const currentCategory = categories.find(cat => cat.id === field.value);
                 const placeholderText = currentCategory ? currentCategory.name : "Select a category";
                 return (
@@ -129,8 +132,9 @@ export default function ArticleFormModal({
             </Button>
             <Button type="submit" disabled={isSubmitting || loading} className="bg-blue-600 text-white hover:bg-blue-700 rounded disabled:opacity-50">
               {(isSubmitting || loading) ? (
-                <div className="w-5 h-5 mr-2">
-                  <Spinner />
+                <div className="flex items-center justify-center w-full">
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
                 </div>
               ) : (
                 editingArticle ? 'Update' : 'Create'

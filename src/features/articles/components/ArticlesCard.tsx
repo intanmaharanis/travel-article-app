@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Image, Video, Star, Clock, ArrowRight, User, MessageCircleMore, Edit, Trash2, MoreHorizontal, Eye } from 'lucide-react';
+import { ArrowRight,  MessageCircleMore, Edit, Trash2, MoreHorizontal } from 'lucide-react';
 import type { ArticleCardProps } from '../../../types/article';
 import { formatDate } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
@@ -8,7 +8,6 @@ import { Button } from '../../../components/ui/button';
 
 export default function ArticlesCard({ article, isAuthenticated, currentUserId, onEdit, onDelete }: ArticleCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const isAuthor = isAuthenticated && currentUserId === article.user?.id;
 
   return (
     <div
@@ -28,7 +27,7 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
 
       <div className={`p-6 flex flex-col justify-between absolute inset-x-0 z-10 bg-white rounded-xl transition-all duration-300 ease-in-out ${isHovered ? 'min-h-64 bottom-0' : 'min-h-54 -bottom-10'}`}>
         <div className='mb-4'>
-        <span className='absolute -top-4 bg-purple-600 text-white text-sm px-3 rounded-full py-1'>{article.category.name}</span>
+        <span className='absolute -top-4 bg-purple-600 text-white text-sm px-3 rounded-full py-1'>{article?.category?.name}</span>
 
          <div className='flex text-sm text-grey-500 justify-between'>
                 <p>{formatDate(article.publishedAt, 'dd MMMM yyyy')}</p>
@@ -51,7 +50,9 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
               <MessageCircleMore width={16} />
               <p className='text-sm text-grey-600'> {article.comments.length} comments</p>
               </div>
-              <Popover>
+              {
+                isAuthenticated && (
+                  <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
                     <MoreHorizontal className="h-4 w-4" />
@@ -81,10 +82,12 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                   </div>
                 </PopoverContent>
               </Popover>
+                )
+              }
           </div>
           {isHovered && (
             <Link
-              to={`/articles/${article.documentId}`}
+              to={isAuthenticated ? `/articles/${article.documentId}` : '/login'}
               className="inline-flex items-center justify-center bg-orange-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-orange-600 transition-all duration-300 w-full mt-4"
             >
               More Information <ArrowRight size={20} className="ml-2" />

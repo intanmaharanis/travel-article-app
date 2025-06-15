@@ -7,13 +7,11 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       <HeroSection/>
-    
 
-      <CategorySection/>
+      <CategorySection/>  
 
       <DestinationSection />
     
-
     </div>
   );
 } 

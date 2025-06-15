@@ -37,8 +37,8 @@ export default function DestinationSection() {
 
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {displayedArticles.map((article) => (
-              <ArticlesCard article={article}/>
+            {displayedArticles.map((article,i) => (
+              <ArticlesCard article={article} key={i}/>
             ))}
           </div>
 

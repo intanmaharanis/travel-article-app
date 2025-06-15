@@ -11,7 +11,7 @@ interface ArticleContentProps {
 
 export default function ArticleContent({ article, showFullContent, onLoadMore }: ArticleContentProps) {
   return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-sm">
+    <div className="p-8">
       <div className="prose max-w-none">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">

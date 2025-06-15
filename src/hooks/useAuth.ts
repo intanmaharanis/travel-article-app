@@ -8,10 +8,12 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: (payload: LoginPayload) => Promise<void>;
-  register: (payload: RegisterPayload) => Promise<void>;
+  login: (payload: LoginPayload) => Promise<boolean>;
+  register: (payload: RegisterPayload) => Promise<boolean>;
   logout: () => void;
   initializeAuth: () => void;
+  error: string | null;
+  setError: (error: string | null) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -19,6 +21,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   isAuthenticated: false,
   loading: false,
+  error: null,
+  setError: (error) => set({ error }),
 
   initializeAuth: () => {
     try {
@@ -37,32 +41,40 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   login: async (payload) => {
-    set({ loading: true });
+    set({ loading: true, error: null });
     try {
       const response = await authApi.login(payload);
       localStorage.setItem('user', JSON.stringify(response.user));
       localStorage.setItem('token', response.jwt);
       set({ user: response.user, token: response.jwt, isAuthenticated: true });
       toast.success('Login successful!');
+      return true;
     } catch (error: any) {
-      toast.error(error.message || 'Login failed.');
+      const errorMessage = "Email/Password tidak sesuai";
+      toast.error(errorMessage);
       console.error('Login error:', error);
+      set({ error: errorMessage });
+      return false;
     } finally {
       set({ loading: false });
     }
   },
 
   register: async (payload) => {
-    set({ loading: true });
+    set({ loading: true, error: null });
     try {
       const response = await authApi.register(payload);
       localStorage.setItem('user', JSON.stringify(response.user));
       localStorage.setItem('token', response.jwt);
       set({ user: response.user, token: response.jwt, isAuthenticated: true });
       toast.success('Registration successful!');
+      return true;
     } catch (error: any) {
-      toast.error(error.message || 'Registration failed.');
+      const specificErrorMessage = error.response?.data?.error?.message || "Registrasi gagal. Coba lagi.";
+      toast.error(specificErrorMessage);
       console.error('Registration error:', error);
+      set({ error: specificErrorMessage });
+      return false;
     } finally {
       set({ loading: false });
     }

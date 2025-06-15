@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import  { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useArticleStore } from '../../../stores/articleStore';
-import Spinner from '../../../components/ui/spinner';
-import { Facebook, Twitter, Linkedin, Share2, User } from 'lucide-react';
+import {  Loader2Icon } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import CommentSection from '../components/CommentSection';
-import { formatDate } from 'date-fns';
-import type { Article } from '../../../types/article';
 import type { Comment } from '../../../types/comment';
-import ArticleDetailSkeleton from '../components/ArticleDetailSkeleton';
+import UserSocialShare from '../../../components/UserSocialShare';
+import ArticleContent from '../components/ArticleContent';
 
 export default function ArticleDetailPage() {
   const { documentId } = useParams<{ documentId: string }>();
@@ -42,12 +40,12 @@ export default function ArticleDetailPage() {
 
   const handleCommentUpdated = (updatedComment: Comment) => {
     setComments(prev => prev.map(comment => 
-      comment.id === updatedComment.id ? updatedComment : comment
+      comment.documentId === updatedComment.documentId ? updatedComment : comment
     ));
   };
 
-  const handleCommentDeleted = (commentId: number) => {
-    setComments(prev => prev.filter(comment => comment.id !== commentId));
+  const handleCommentDeleted = (commentDocumentId: string) => {
+    setComments(prev => prev.filter(comment => comment.documentId !== commentDocumentId));
   };
 
   const handleLoadMore = () => {
@@ -72,6 +70,18 @@ export default function ArticleDetailPage() {
     } finally {
       setIsSharing(false);
     }
+  };
+
+  const handleShareFacebook = () => {
+    shareOnSocialMedia('facebook');
+  };
+
+  const handleShareInstagram = () => {
+    shareOnSocialMedia('instagram');
+  };
+
+  const handleShareWhatsapp = () => {
+    shareOnSocialMedia('whatsapp');
   };
 
   const shareOnSocialMedia = (platform: string) => {
@@ -100,7 +110,11 @@ export default function ArticleDetailPage() {
   };
 
   if (loading) {
-    return <ArticleDetailSkeleton />;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2Icon className="animate-spin w-10 h-10 text-gray-500" />
+      </div>
+    );
   }
 
   if (!currentArticle) {
@@ -129,89 +143,15 @@ export default function ArticleDetailPage() {
           )}
         </div>
 
-        <div className="lg:col-span-2  rounded-2xl p-8">
-            <div className="prose max-w-none">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
-                  <User className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Written by</p>
-                  <p className="font-semibold text-gray-900">{currentArticle.user?.username || 'Anonymous'}</p>
-                </div>
-                <div className="h-8 w-px bg-gray-200"></div>
-                <div>
-                  <p className="text-sm text-gray-500">Published</p>
-                  <p className="font-semibold text-gray-900">{formatDate(currentArticle.publishedAt, 'dd MMMM yyyy')}</p>
-                </div>
-              </div>
+        <ArticleContent article={currentArticle} showFullContent={showFullContent} onLoadMore={handleLoadMore}/>
 
-              <h1 className="text-3xl font-bold text-gray-900 mb-6">
-                {currentArticle.title}
-              </h1>
-
-              <div className="text-gray-700 leading-relaxed text-lg space-y-4">
-                {showFullContent
-                  ? currentArticle.description
-                  : `${currentArticle.description?.slice(0, 500)}...`}
-              </div>
-
-              {!showFullContent && currentArticle.description && currentArticle.description.length > 500 && (
-                <button
-                  onClick={handleLoadMore}
-                  className="mt-6 text-purple-600 font-semibold hover:text-purple-700 transition flex items-center group"
-                >
-                  Read More
-                  <svg 
-                    className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
-
-        {/* Social Sharing */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Share this article</h3>
-            <div className="flex space-x-4">
-              <button
-                onClick={() => shareOnSocialMedia('facebook')}
-                className="text-blue-600 hover:text-blue-700 transition p-2 hover:bg-blue-50 rounded-full"
-                aria-label="Share on Facebook"
-              >
-                <Facebook size={24} />
-              </button>
-              <button
-                onClick={() => shareOnSocialMedia('twitter')}
-                className="text-blue-400 hover:text-blue-500 transition p-2 hover:bg-blue-50 rounded-full"
-                aria-label="Share on Twitter"
-              >
-                <Twitter size={24} />
-              </button>
-              <button
-                onClick={() => shareOnSocialMedia('linkedin')}
-                className="text-blue-700 hover:text-blue-800 transition p-2 hover:bg-blue-50 rounded-full"
-                aria-label="Share on LinkedIn"
-              >
-                <Linkedin size={24} />
-              </button>
-              <button
-                onClick={handleShare}
-                disabled={isSharing}
-                className="text-gray-600 hover:text-gray-700 transition p-2 hover:bg-gray-50 rounded-full"
-                aria-label="Share using native share"
-              >
-                <Share2 size={24} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <UserSocialShare
+          username={currentArticle.user?.username || 'Anonymous'}
+          description={''}
+          onShareClick={handleShare}
+          onShareFacebook={handleShareFacebook}
+          onShareInstagram={handleShareInstagram}
+        />
 
         {/* Comment Section */}
         {documentId && (currentArticle?.id !== undefined) && (

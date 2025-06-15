@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useCategoryStore } from '../../../stores/categoryStore';
-import Spinner from '../../../components/ui/spinner';
-import CategoryCard from '../../../components/CategoryCard';
+import CategoryCard from '../components/CategoryCard';
 import { getRandomIcon } from '../../../constants/icons';
-import HeroCategory from '../components/heroCategory';
+import HeroCategory from '../components/HeroCategory';
 import { Button } from '../../../components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus,  Loader2Icon } from 'lucide-react';
 import CategoryFormModal, { type CategoryFormValues } from '../components/CategoryFormModal';
-import { useAuthStore } from '../../../stores/authStore';
 import type { Category } from '../../../types/category';
+import { toast } from "sonner";
+import { useAuth } from '../../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export default function CategoriesPage() {
   const { categories, fetchAllData, loading, createCategory, updateCategory, deleteCategory } = useCategoryStore();
-  const { isAuthenticated, user } = useAuthStore();
-  const isAdmin = isAuthenticated && user?.role.id === 1;
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -24,8 +25,12 @@ export default function CategoriesPage() {
   }, [fetchAllData]);
 
   const handleCreateCategory = () => {
-    setEditingCategory(null);
-    setIsModalOpen(true);
+    if (isAuthenticated) {
+      setEditingCategory(null);
+      setIsModalOpen(true);
+    } else {
+      navigate('/login');
+    }
   };
 
   const handleEditCategory = (category: Category) => {
@@ -33,16 +38,14 @@ export default function CategoriesPage() {
     setIsModalOpen(true);
   };
 
-  const handleDeleteCategory = async (categoryId: number) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
-      try {
-        await deleteCategory(categoryId);
-        // Refetch categories to ensure UI is updated after deletion
-        fetchAllData();
-      } catch (error) {
-        console.error("Error deleting category:", error);
-        alert("Failed to delete category.");
-      }
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      await deleteCategory(categoryId);
+      toast.success('Category deleted successfully');
+      fetchAllData(); // Refetch categories to ensure UI is updated after deletion
+    } catch (error: any) {
+      console.error("Error deleting category:", error);
+      toast.error(error.message || 'Failed to delete category.');
     }
   };
 
@@ -50,15 +53,15 @@ export default function CategoriesPage() {
     setIsSubmitting(true);
     try {
       if (editingCategory) {
-        await updateCategory(editingCategory.documentId, data.name);
+        await updateCategory(editingCategory.documentId, data.name, data.description);
       } else {
-        await createCategory(data.name);
+        await createCategory(data.name, data.description);
       }
       setIsModalOpen(false);
       fetchAllData(); // Re-fetch categories after creation/update
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving category:", error);
-      alert("Failed to save category.");
+      toast.error(error.message || 'Failed to save category.');
     } finally {
       setIsSubmitting(false);
     }
@@ -76,7 +79,7 @@ export default function CategoriesPage() {
           </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Spinner />
+            <Loader2Icon className="animate-spin w-10 h-10 text-gray-500" />
           </div>
         ) : categories.length === 0 ? (
           <div className="text-center py-16 text-gray-600 text-xl">
@@ -102,11 +105,13 @@ export default function CategoriesPage() {
 
       <CategoryFormModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingCategory(null);
+        } }
         editingCategory={editingCategory}
         onSubmit={handleModalSubmit}
-        isSubmitting={isSubmitting}
-      />
+        isSubmitting={isSubmitting} loading={false}      />
     </div>
   )
 }

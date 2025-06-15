@@ -6,13 +6,14 @@ import { formatDistanceToNow } from 'date-fns';
 import type { Comment as CommentType } from '../../../types/comment';
 import { toast } from 'sonner';
 import { commentApi } from '../../../services/commentApi';
+import ConfirmDeleteDialog from '../../../components/ConfirmDeleteDialog';
 
 interface CommentProps {
   comment: CommentType;
   isAuthenticated: boolean;
   currentUserId?: number;
   onCommentUpdate: (updatedComment: CommentType) => void;
-  onCommentDelete: (commentId: number) => void;
+  onCommentDelete: (commentDocumentId: string) => void;
 }
 
 export default function Comment({ 
@@ -25,13 +26,14 @@ export default function Comment({
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   const handleUpdateComment = async () => {
     if (!editContent.trim()) return;
 
     setIsSubmitting(true);
     try {
-      const response = await commentApi.updateComment(comment.id, {
+      const response = await commentApi.updateComment(comment.documentId, {
         content: editContent
       });
       onCommentUpdate(response.data);
@@ -45,16 +47,16 @@ export default function Comment({
     }
   };
 
-  const handleDeleteComment = async () => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) return;
-
+  const confirmDeleteComment = async () => {
     try {
-      await commentApi.deleteComment(comment.id);
-      onCommentDelete(comment.id);
+      await commentApi.deleteComment(comment.documentId);
+      onCommentDelete(comment.documentId);
       toast.success('Comment deleted successfully');
+      setShowConfirmDelete(false);
     } catch (error) {
       console.error('Error deleting comment:', error);
       toast.error('Failed to delete comment');
+      setShowConfirmDelete(false);
     }
   };
 
@@ -119,7 +121,7 @@ export default function Comment({
                   <Edit2 size={18} />
                 </button>
                 <button
-                  onClick={handleDeleteComment}
+                  onClick={() => setShowConfirmDelete(true)}
                   className="text-gray-500 hover:text-red-600 transition p-1.5 rounded-full hover:bg-red-50"
                   aria-label="Delete comment"
                 >
@@ -135,6 +137,14 @@ export default function Comment({
           </div>
         </>
       )}
+
+      <ConfirmDeleteDialog
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        onConfirm={confirmDeleteComment}
+        itemType="comment"
+        itemName="Anda yakin ingin menghapus comment?"
+      />
     </div>
   );
 } 

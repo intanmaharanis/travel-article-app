@@ -3,13 +3,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../../../lib/zodSchemas';
 import { useAuth } from '../../../hooks/useAuth';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2Icon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// Komponen UI dasar, ganti dengan komponen UI project jika ada
-const Input = (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} className="border rounded px-2 py-1 w-full" />;
-const Button = (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50 flex items-center justify-center" />;
-const Spinner = () => <span className="inline-block animate-spin rounded-full h-5 w-5 border-2 border-b-0 border-blue-600 align-middle" />;
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { Alert, AlertDescription } from '../../../components/ui/alert';
 
 export type RegisterSchema = {
   username: string;
@@ -22,21 +20,32 @@ const RegisterForm: React.FC = () => {
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<RegisterSchema>({
     resolver: zodResolver(registerSchema),
   });
-  const { register: authRegister, loading } = useAuth();
+  const { register: authRegister, loading, error: authError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
+  const [formError, setFormError] = useState<string | null>(null);
 
   const onSubmit = async (data: RegisterSchema) => {
+    setFormError(null);
     const { username, email, password } = data;
-    await authRegister({ username, email, password });
-    reset();
-    navigate('/');
+    const success = await authRegister({ username, email, password });
+    if (success) {
+      reset();
+      navigate('/');
+    } else {
+      setFormError(authError);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-md mx-auto p-4 border rounded">
       <h2 className="text-xl font-bold mb-2">Register</h2>
+      {formError && (
+        <Alert variant="destructive">
+          <AlertDescription>{formError}</AlertDescription>
+        </Alert>
+      )}
       <div>
         <label htmlFor="username">Username</label>
         <Input id="username" type="text" {...register('username')} />
@@ -67,8 +76,8 @@ const RegisterForm: React.FC = () => {
         </div>
         {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
       </div>
-      <Button type="submit" disabled={isSubmitting || loading}>
-        {(isSubmitting || loading) ? <Spinner /> : 'Register'}
+      <Button type="submit" disabled={isSubmitting || loading} className="w-full">
+        {(isSubmitting || loading) ? <><Loader2Icon className="animate-spin mr-2" /> Please wait</> : 'Register'}
       </Button>
     </form>
   );

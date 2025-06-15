@@ -61,8 +61,16 @@ export async function handleResponse<T>(res: Response): Promise<T> {
     try {
       const data = await res.json();
       message = data.message || JSON.stringify(data);
-    } catch {}
+    } catch (e) {
+      console.error("Error parsing error response:", e);
+    }
     throw new Error(message);
   }
+
+  // Handle 204 No Content for successful deletions
+  if (res.status === 204) {
+    return {} as T; // Return an empty object for no content success
+  }
+
   return res.json();
 }

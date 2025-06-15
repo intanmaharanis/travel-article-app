@@ -22,9 +22,9 @@ interface CategoryStore {
   getDestinationCount: (categoryId: string) => number;
   selectCategory: (categoryId: number | null) => void;
   setCurrentPage: (page: number) => void;
-  createCategory: (name: string) => Promise<void>;
-  updateCategory: (id: string, name: string) => Promise<void>;
-  deleteCategory: (id: number) => Promise<void>;
+  createCategory: (name: string, description: string) => Promise<void>;
+  updateCategory: (id: string, name: string, description: string) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
 }
 
 export const useCategoryStore = create<CategoryStore>((set, get) => ({
@@ -81,9 +81,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
   selectCategory: (categoryId) => set({ selectedCategoryId: categoryId }),
   setCurrentPage: (page: number) => set({ currentPage: page }),
 
-  createCategory: async (name: string) => {
+  createCategory: async (name: string, description: string) => {
     try {
-      const newCategory = await articleApi.createCategory({ name });
+      const newCategory = await articleApi.createCategory({ name, description });
       set((state) => ({
         categories: [...state.categories, newCategory.data],
       }));
@@ -93,9 +93,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     }
   },
 
-  updateCategory: async (id: string, name: string) => {
+  updateCategory: async (id: string, name: string, description: string) => {
     try {
-      const updatedCategory = await articleApi.updateCategory(id, { name });
+      const updatedCategory = await articleApi.updateCategory(id, { name, description });
       set((state) => ({
         categories: state.categories.map((cat) =>
           cat.documentId === id ? updatedCategory.data : cat
@@ -107,11 +107,11 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
     }
   },
 
-  deleteCategory: async (id: number) => {
+  deleteCategory: async (id: string) => {
     try {
       await articleApi.deleteCategory(id);
       set((state) => ({
-        categories: state.categories.filter((cat) => cat.id !== id),
+        categories: state.categories.filter((cat) => cat.documentId !== id),
       }));
     } catch (err) {
       console.error("Failed to delete category:", err);

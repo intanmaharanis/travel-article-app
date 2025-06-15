@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, Home, LayoutList, FileText } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useCategoryStore } from "../stores/categoryStore";
 
@@ -13,6 +13,18 @@ import {
   NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 import { cn } from "../lib/utils";
+
+interface NavLink {
+  name: string;
+  path: string;
+  icon?: React.ElementType;
+}
+
+const navLinks: NavLink[] = [
+  { name: "Home", path: "/", icon: Home },
+  { name: "Categories", path: "/categories", icon: LayoutList },
+  { name: "Articles", path: "/articles", icon: FileText },
+];
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,47 +77,23 @@ export default function Navbar() {
           <div className="hidden md:flex md:items-center">
             <NavigationMenu>
               <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/"
-                      className={cn(
-                        "px-4 py-2 text-2xl font-medium transition-colors hover:bg-accent hover:text-lime-500 focus:bg-accent focus:text-lime-500 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        isActive("/") ? "text-lime-500" : (isTransparent ? "text-white" : "text-lime")
-                      )}
-                    >
-                      Home
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/categories"
-                      className={cn(
-                        "group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        isActive("/articles") ? "bg-accent/50" : (isTransparent ? "text-white" : "text-gray-700")
-                      )}
-                    >
-                      Categories
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link
-                      to="/articles"
-                      className={cn(
-                        "group inline-flex h-9 w-max items-center justify-center rounded-md  px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
-                        isActive("/articles") ? "bg-accent/50" : (isTransparent ? "text-white" : "text-gray-700")
-                      )}
-                    >
-                      Articles
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                {navLinks.map((link) => (
+                  <NavigationMenuItem key={link.path}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={link.path}
+                        className={cn(
+                          "px-4 py-2 font-medium transition-colors hover:bg-accent hover:text-lime-500 focus:bg-accent focus:text-lime-500 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50",
+                          "flex items-center space-x-1 whitespace-nowrap",
+                          isActive(link.path) ? "text-lime-500" : (isTransparent ? "text-white" : "text-gray-700")
+                        )}
+                      >
+                        {link.icon && <link.icon size={20} className="inline" />}
+                        <span>{link.name}</span>
+                      </Link>
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                ))}
               </NavigationMenuList>
             </NavigationMenu>
           </div>
@@ -120,7 +108,7 @@ export default function Navbar() {
                   className={cn("flex items-center bg-rose-500 px-2 py-1 rounded text-white")}
                 >
                   <LogOut size={20} className="mr-1" />
-                  
+                  Logout
                 </button>
               </div>
             ) : (
@@ -131,7 +119,6 @@ export default function Navbar() {
                 >
                   Login
                 </Link>
-                
               </div>
             )}
 
@@ -149,53 +136,38 @@ export default function Navbar() {
         <div className="md:hidden bg-white shadow-lg py-2">
           <div className="pt-2 pb-3 space-y-1">
             {/* Mobile Nav Links */}
-            <Link
-              to="/"
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                isActive("/")
-                  ? 'bg-purple-50 border-purple-500 text-purple-700'
-                  : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              to="/articles"
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                isActive("/articles")
-                  ? 'bg-purple-50 border-purple-500 text-purple-700'
-                  : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Articles
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={cn(
+                  "pl-3 pr-4 py-2 border-l-4 text-base font-medium",
+                  "flex items-center space-x-2 whitespace-nowrap",
+                  isActive(link.path)
+                    ? 'bg-purple-50 border-purple-500 text-purple-700'
+                    : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                )}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.icon && <link.icon size={20} className="inline" />}
+                <span>{link.name}</span>
+              </Link>
+            ))}
             {categories.map((category) => (
               <Link
                 key={category.id}
                 to={`/articles/category/${category.name.toLowerCase()}`}
-                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                className={cn(
+                  "block pl-3 pr-4 py-2 border-l-4 text-base font-medium",
                   isActive(`/articles/category/${category.name.toLowerCase()}`)
                     ? 'bg-purple-50 border-purple-500 text-purple-700'
                     : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-                }`}
+                )}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {category.name}
               </Link>
             ))}
-            <Link
-              to="/categories"
-              className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
-                isActive("/categories")
-                  ? 'bg-purple-50 border-purple-500 text-purple-700'
-                  : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Categories
-            </Link>
 
             {isAuthenticated ? (
               <div className="pt-4 pb-3 border-t border-gray-200">
@@ -266,13 +238,15 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, ListItemProps>(
             {...props}
           >
             <div className="text-sm font-medium leading-none">{title}</div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-              {children}
-            </p>
+            {children && (
+              <p className="text-muted-foreground text-sm leading-snug line-clamp-2">
+                {children}
+              </p>
+            )}
           </Link>
         </NavigationMenuLink>
       </li>
-    );
+    )
   }
-);
-ListItem.displayName = "ListItem"; 
+)
+ListItem.displayName = "ListItem" 
