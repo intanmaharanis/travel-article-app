@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Edit2, Trash2, X, Check, User } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Textarea } from '../../../components/ui/textarea';
@@ -11,17 +11,15 @@ import ConfirmDeleteDialog from '../../../components/ConfirmDeleteDialog';
 interface CommentProps {
   comment: CommentType;
   isAuthenticated: boolean;
-  currentUserId?: number;
   onCommentUpdate: (updatedComment: CommentType) => void;
   onCommentDelete: (commentDocumentId: string) => void;
 }
 
-export default function Comment({ 
-  comment, 
-  isAuthenticated, 
-  currentUserId,
+export default function Comment({
+  comment,
+  isAuthenticated,
   onCommentUpdate,
-  onCommentDelete 
+  onCommentDelete
 }: CommentProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(comment.content);

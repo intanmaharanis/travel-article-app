@@ -16,7 +16,7 @@ interface ArticleStore {
   totalArticles: number;
   totalPages: number;
 
-  fetchArticles: (categoryName?: string, page?: number, pageSize?: number, searchTerm?: string) => Promise<void>;
+  fetchArticles: (categoryName?: string, page?: number, pageSize?: number, searchTerm?: string, userId?: string) => Promise<void>;
   fetchArticleById: (id: string) => Promise<void>;
   createArticle: (payload: CreateArticlePayload) => Promise<void>;
   updateArticle: (id: string, payload: UpdateArticlePayload) => Promise<void>;
@@ -35,25 +35,20 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
   totalArticles: 0,
   totalPages: 0,
 
-  fetchArticles: async (categoryName, page = get().currentPage, pageSize = get().pageSize, searchTerm) => {
+  fetchArticles: async (categoryName, page = get().currentPage, pageSize = get().pageSize, searchTerm, userId) => {
     set({ loading: true, error: null });
     try {
-      const response = await articleApi.getArticles(categoryName, page, pageSize, searchTerm);
-      const articles = (response as ApiResponse<Article[]>).data;
+      const response = await articleApi.getArticles(categoryName, page, pageSize, searchTerm, userId); 
+      const { data, meta } = response as ApiResponse<Article[]>;
 
-      console.log(response);
-
-      // Manually sort articles by createdAt in descending order
-      const sortedArticles = articles.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-
-      const pagination = response.meta?.pagination;
+      const sortedArticles = data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       set({
         articles: sortedArticles,
-        currentPage: pagination?.page || 1,
-        pageSize: pagination?.pageSize || 10,
-        totalArticles: pagination?.total || 0,
-        totalPages: pagination?.pageCount || 0,
+        currentPage: meta?.pagination?.page || page,
+        pageSize: meta?.pagination?.pageSize || pageSize,
+        totalArticles: meta?.pagination?.total || 0,
+        totalPages: meta?.pagination?.pageCount || 0,
       });
     } catch (err: any) {
       set({ error: err.message || 'Failed to fetch articles.' });
@@ -78,47 +73,50 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
   },
 
   createArticle: async (payload) => {
-    set({ loading: true, error: null });
+    set({ error: null });
     try {
-      await articleApi.createArticle(payload);
+      const response = await articleApi.createArticle(payload);
+      const newArticle = (response as ApiResponse<Article>).data;
+      set(state => ({
+        articles: [{ ...newArticle, comments: newArticle.comments || [] }, ...state.articles], 
+        totalArticles: state.totalArticles + 1,
+      }));
       toast.success('Article created successfully!');
-      // Optionally refetch articles to update the list
-      // get().fetchArticles();
     } catch (err: any) {
       set({ error: err.message || 'Failed to create article.' });
       toast.error(err.message || 'Failed to create article.');
-    } finally {
-      set({ loading: false });
     }
   },
 
   updateArticle: async (id, payload) => {
-    set({ loading: true, error: null });
+    set({ error: null });
     try {
-      await articleApi.updateArticle(id, payload);
+      const response = await articleApi.updateArticle(id, payload);
+      const updatedArticle = (response as ApiResponse<Article>).data; 
+      set(state => ({
+        articles: state.articles.map(article =>
+          article.documentId === id ? { ...updatedArticle, comments: updatedArticle.comments || [] } : article
+        ),
+      }));
       toast.success('Article updated successfully!');
-      // Optionally refetch articles or update locally
-      // get().fetchArticles();
     } catch (err: any) {
       set({ error: err.message || 'Failed to update article.' });
       toast.error(err.message || 'Failed to update article.');
-    } finally {
-      set({ loading: false });
     }
   },
 
   deleteArticle: async (id) => {
-    set({ loading: true, error: null });
+    set({ error: null });
     try {
       await articleApi.deleteArticle(id);
+      set(state => ({
+        articles: state.articles.filter(article => article.documentId !== id),
+        totalArticles: state.totalArticles - 1,
+      }));
       toast.success('Article deleted successfully!');
-      // Optionally refetch articles or remove locally
-      // set(state => ({ articles: state.articles.filter(article => article.id !== id) }));
     } catch (err: any) {
       set({ error: err.message || 'Failed to delete article.' });
       toast.error(err.message || 'Failed to delete article.');
-    } finally {
-      set({ loading: false });
     }
   },
 

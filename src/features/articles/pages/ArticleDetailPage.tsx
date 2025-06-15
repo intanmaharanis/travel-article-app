@@ -1,7 +1,6 @@
 import  { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useArticleStore } from '../../../stores/articleStore';
-import {  Loader2Icon } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 import CommentSection from '../components/CommentSection';
 import type { Comment } from '../../../types/comment';
@@ -13,7 +12,6 @@ export default function ArticleDetailPage() {
   const { currentArticle, fetchArticleById, loading, fetchArticles } = useArticleStore();
   const { isAuthenticated, user } = useAuth();
   const [showFullContent, setShowFullContent] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
@@ -53,7 +51,7 @@ export default function ArticleDetailPage() {
   };
 
   const handleShare = async () => {
-    setIsSharing(true);
+    
     try {
       if (navigator.share) {
         await navigator.share({
@@ -68,7 +66,7 @@ export default function ArticleDetailPage() {
     } catch (error) {
       console.error('Error sharing:', error);
     } finally {
-      setIsSharing(false);
+      
     }
   };
 
@@ -80,25 +78,13 @@ export default function ArticleDetailPage() {
     shareOnSocialMedia('instagram');
   };
 
-  const handleShareWhatsapp = () => {
-    shareOnSocialMedia('whatsapp');
-  };
-
   const shareOnSocialMedia = (platform: string) => {
     const url = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent(currentArticle?.title || '');
-    const text = encodeURIComponent(currentArticle?.description || '');
 
     let shareUrl = '';
     switch (platform) {
       case 'facebook':
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-        break;
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
-        break;
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
         break;
       default:
         break;
@@ -109,25 +95,52 @@ export default function ArticleDetailPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !currentArticle) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2Icon className="animate-spin w-10 h-10 text-gray-500" />
-      </div>
-    );
-  }
+      <div className="min-h-screen bg-gray-50 py-12 px-4">
+        <div className="w-full md:max-w-10/12 mx-auto">
+          {/* Skeleton for Hero Image */}
+          <div className="relative mb-12 h-[600px] w-full bg-gray-200 rounded-2xl animate-pulse"></div>
 
-  if (!currentArticle) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-xl text-gray-600">Article not found</p>
+          {/* Skeleton for Article Content */}
+          <div className="bg-white p-8 rounded-2xl shadow-lg mb-8 animate-pulse">
+            <div className="h-10 bg-gray-300 rounded w-3/4 mb-4"></div>
+            <div className="h-6 bg-gray-300 rounded w-1/2 mb-8"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-11/12 mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+          </div>
+
+          {/* Skeleton for User Social Share */}
+          <div className="bg-white p-8 rounded-2xl shadow-lg mb-8 animate-pulse">
+            <div className="flex items-center space-x-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gray-300"></div>
+              <div className="h-6 bg-gray-300 rounded w-40"></div>
+            </div>
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
+            <div className="flex space-x-4 mt-4">
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
+            </div>
+          </div>
+
+          {/* Skeleton for Comment Section */}
+          <div className="bg-white p-8 rounded-2xl shadow-lg animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-1/3 mb-6"></div>
+            <div className="h-20 bg-gray-200 rounded w-full mb-4"></div>
+            <div className="h-16 bg-gray-200 rounded w-full mb-4"></div>
+            <div className="h-16 bg-gray-200 rounded w-full"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-12 ">
-      <div className="max-w-10/12 mx-auto px-4 mt-10">
+      <div className="w-full md:max-w-10/12 mx-auto px-4 mt-10">
         {/* Article Header with Hero Image */}
         <div className="relative mb-12">
           {currentArticle.cover_image_url && (
@@ -147,7 +160,7 @@ export default function ArticleDetailPage() {
 
         <UserSocialShare
           username={currentArticle.user?.username || 'Anonymous'}
-          description={''}
+          description={currentArticle.description}
           onShareClick={handleShare}
           onShareFacebook={handleShareFacebook}
           onShareInstagram={handleShareInstagram}

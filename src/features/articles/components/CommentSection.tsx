@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Send, Loader2Icon } from 'lucide-react';
+import { useState } from 'react';
+import { Send } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { Textarea } from '../../../components/ui/textarea';
 import { toast } from 'sonner';
@@ -20,7 +20,6 @@ interface CommentSectionProps {
 export default function CommentSection({
   articleId,
   isAuthenticated,
-  currentUserId,
   commentsCurrent,
   onCommentAdded,
   onCommentUpdated,
@@ -28,21 +27,6 @@ export default function CommentSection({
 }: CommentSectionProps) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadingComments, setLoadingComments] = useState(false);
-
-  useEffect(() => {
-    // No need to fetch comments locally, they are passed as commentsCurrent
-    // However, if CommentSection was designed to fetch its own comments,
-    // this useEffect would handle it.
-    // Since comments are now passed as prop, we directly use commentsCurrent
-    // and rely on parent to update it via callbacks.
-
-    // If there's an initial load or refresh that needs to be reflected,
-    // ensure commentsCurrent is stable or handled by parent.
-
-    // No longer setting comments state directly from commentsCurrent here
-    // setComments(commentsCurrent)
-  }, [commentsCurrent])
 
   const handleCommentSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,16 +49,6 @@ export default function CommentSection({
       setIsSubmitting(false);
     }
   };
-
-  if (loadingComments) {
-    return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 flex justify-center items-center h-48">
-        <div className="flex justify-center items-center h-20">
-          <Loader2Icon className="animate-spin w-8 h-8 text-gray-500" />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8">
@@ -99,7 +73,7 @@ export default function CommentSection({
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center w-full">
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                  
                   Posting...
                 </div>
               ) : (
@@ -127,7 +101,6 @@ export default function CommentSection({
             key={comment.id || `comment-${i}`}
             comment={comment}
             isAuthenticated={isAuthenticated}
-            currentUserId={currentUserId}
             onCommentUpdate={onCommentUpdated}
             onCommentDelete={onCommentDeleted}
           />

@@ -4,20 +4,20 @@ import type { Category } from '../../../types/category';
 import { MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
 import { Button } from '../../../components/ui/button';
-import { useAuthStore } from '../../../stores/authStore';
 import ConfirmDeleteDialog from '../../../components/ConfirmDeleteDialog';
 
 interface CategoryCardProps {
   category: Category;
   Icon: LucideIcon;
+  isAuthenticated: boolean;
   onEdit?: (category: Category) => void;
   onDelete?: (categoryId: string) => void;
 }
 
-const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onDelete }) => {
+const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onDelete, isAuthenticated }) => {
   const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
 
-  const {isAuthenticated} = useAuthStore()
+
 
   return (
     <div className="flex flex-col items-start p-6 rounded-xl bg-teal-900 text-white shadow-lg relative transform transition-transform duration-300 hover:scale-105">
@@ -28,12 +28,11 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onD
       <p className="text-sm text-gray-300 mb-4 text-justify">{category.description}</p>
 
        
-        {
-        isAuthenticated && (
+        { isAuthenticated && (
         <div className="absolute top-4 right-4">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0 text-white hover:text-gray-200">
+              <Button variant="ghost" className="h-8 w-8 p-0 text-white hover:text-gray-800">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </PopoverTrigger>

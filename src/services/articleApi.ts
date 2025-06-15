@@ -2,15 +2,25 @@ import { API_BASE_URL, handleResponse, type ApiResponse, type CreateArticlePaylo
 import type { Category } from '../types/category';
 
 export const articleApi = {
-  async getArticles(categoryName?: string, page: number = 1, pageSize: number = 10, searchTerm?: string): Promise<ApiResponse<any[]>> {
+  async getArticles(categoryName?: string, page: number = 1, pageSize: number = 10, searchTerm?: string, userId?: string): Promise<ApiResponse<any[]>> {
     let url = `${API_BASE_URL}/api/articles?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=*`;
+
     if (categoryName) {
-      url += `&filters[category][name][$eq]=${categoryName}`;
+      url += `&filters[category][name][$eq]=${encodeURIComponent(categoryName)}`;
     }
+
     if (searchTerm) {
-      url += `&filters[title][$containsi]=${searchTerm}`;
+      url += `&filters[$or][0][title][$containsi]=${encodeURIComponent(searchTerm)}`;
+      url += `&filters[$or][1][description][$containsi]=${encodeURIComponent(searchTerm)}`;
     }
-    const res = await fetch(url);
+
+    if (userId) {
+      url += `&filters[user][id][$eq]=${encodeURIComponent(userId)}`;
+    }
+
+    const res = await fetch(url, {
+      headers: getAuthHeaders(),
+    });
     return handleResponse<ApiResponse<any[]>>(res);
   },
 

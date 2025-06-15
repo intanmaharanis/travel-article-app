@@ -3,9 +3,11 @@ import { useCategoryStore } from "../../../stores/categoryStore";
 import CategoryCard from "../../categories/components/CategoryCard";
 import { getRandomIcon } from "../../../constants/icons";
 import { ArrowRight } from 'lucide-react';
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function CategorySection() {
   const { categories, fetchAllData } = useCategoryStore();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -16,12 +18,12 @@ export default function CategorySection() {
   const displayedCategories = categories.slice(0, 4); // Limit to 4 categories
 
   return (
-    <section className="py-20 px-16 bg-white">
+    <section className="py-20 px-2 md:px-8 lg:px-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center mb-10">
           <div>
             <h4 className="text-sm font-semibold text-gray-500 uppercase mb-2">New Adventures</h4>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Find Your Next Great Trip
             </h2>
             <p className="text-gray-600 max-w-2xl hidden">
@@ -40,7 +42,7 @@ export default function CategorySection() {
           {displayedCategories.map((category, index) => {
             const Icon = getRandomIcon(index);
             return (
-              <CategoryCard key={category.id} category={category} Icon={Icon} />
+              <CategoryCard key={category.id} category={category} Icon={Icon} isAuthenticated={isAuthenticated} />
             );
           })}
         </div>

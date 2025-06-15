@@ -1,4 +1,3 @@
-import React from 'react';
 import { User } from 'lucide-react';
 import { formatDate } from 'date-fns';
 import type { Article } from '../../../types/article';

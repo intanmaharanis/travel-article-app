@@ -39,6 +39,9 @@ export const useCategoryStore = create<CategoryStore>((set, get) => ({
   totalPages: 0,
 
   fetchAllData: async () => {
+    if (get().categories.length > 0) {
+      return; // Categories already fetched
+    }
     set({ loading: true });
     try {
       const categoriesResponse = await articleApi.getCategories();

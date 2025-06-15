@@ -28,10 +28,10 @@ export default function HeroSection() {
         <p className="text-lg md:text-xl mb-8 text-gray-200 max-w-2xl mx-auto">
           {_HERO.description}
         </p>
-        <div className="flex gap-1 w-full gap-4 justify-center my-4">
+        <div className="flex flex-wrap gap-2 justify-center my-4">
         {
           _HERO.images.map((img, index) => (
-            <div className="w-40 h-40 rounded-xl overflow-hidden transition-all duration-300 hover:rounded-r-2xl" key={index}>
+            <div className="w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-xl overflow-hidden transition-all duration-300 hover:rounded-r-2xl" key={index}>
                <img
                 src={img}
                 alt={`image-${index}`}

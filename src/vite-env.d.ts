@@ -1,4 +1,10 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+  // more env variables...
+}
 
-VITE_API_URL=https://extra-brooke-yeremiadio-46b2183e.koyeb.app
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

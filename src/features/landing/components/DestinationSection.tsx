@@ -5,7 +5,7 @@ import { Plane, Map, Heart } from "lucide-react";
 import ArticlesCard from "../../articles/components/ArticlesCard";
 
 export default function DestinationSection() {
-  const { articles, fetchArticles, loading } = useArticleStore();
+  const { articles, fetchArticles } = useArticleStore();
   const {  fetchAllData: fetchCategories } = useCategoryStore();
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export default function DestinationSection() {
 
 
   return (
-    <section className="py-20 px-4 bg-lime-100 relative overflow-hidden mx-10 rounded-xl shadow mb-16">
+    <section className="py-10 lg:py-20 px-4 bg-lime-100 relative overflow-hidden mx-3 md:mx-4 lg:mx-10 rounded-xl shadow mb-16">
       <div className="absolute top-20 left-20 opacity-20 transform -rotate-12">
         <Map size={75} className="text-400" />
       </div>
@@ -29,7 +29,7 @@ export default function DestinationSection() {
         <Heart size={75} className="text-400" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-0 lg:px-4 relative z-10">
         <div className="text-center mb-12">
           <h4 className="text-sm font-semibold text-red-500 uppercase mb-2">Top Destinations</h4>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900">The best destinations</h2>

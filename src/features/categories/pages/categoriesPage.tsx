@@ -42,7 +42,6 @@ export default function CategoriesPage() {
     try {
       await deleteCategory(categoryId);
       toast.success('Category deleted successfully');
-      fetchAllData(); // Refetch categories to ensure UI is updated after deletion
     } catch (error: any) {
       console.error("Error deleting category:", error);
       toast.error(error.message || 'Failed to delete category.');
@@ -58,7 +57,6 @@ export default function CategoriesPage() {
         await createCategory(data.name, data.description);
       }
       setIsModalOpen(false);
-      fetchAllData(); // Re-fetch categories after creation/update
     } catch (error: any) {
       console.error("Error saving category:", error);
       toast.error(error.message || 'Failed to save category.');
@@ -96,6 +94,7 @@ export default function CategoriesPage() {
                 Icon={Icon}
                 onEdit={handleEditCategory}
                 onDelete={handleDeleteCategory}
+                isAuthenticated={isAuthenticated}
               />
             );
           })}

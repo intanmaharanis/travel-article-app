@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Input } from '../../../components/ui/input';

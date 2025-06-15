@@ -1,46 +1,33 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react';
+
+const socialLinks = [
+  { href: 'https://www.facebook.com/', icon: <Facebook size={24} />, label: 'Facebook' },
+  { href: 'https://www.instagram.com/', icon: <Instagram size={24} />, label: 'Instagram' },
+  { href: 'https://twitter.com/', icon: <Twitter size={24} />, label: 'Twitter' },
+  { href: 'https://www.youtube.com/', icon: <Youtube size={24} />, label: 'Youtube' },
+];
+
+// Assuming footerLinks are defined elsewhere if not in the provided snippet
+const footerLinks = {
+  legal: [
+    { name: 'Privacy Policy', path: '/privacy' },
+    { name: 'Terms of Service', path: '/terms' },
+    { name: 'Cookie Policy', path: '/cookies' },
+  ],
+};
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    company: [
-      { name: 'About Us', path: '/about' },
-      { name: 'Careers', path: '/careers' },
-      { name: 'Blog', path: '/blog' },
-      { name: 'Press', path: '/press' },
-    ],
-    support: [
-      { name: 'Help Center', path: '/help' },
-      { name: 'Safety Center', path: '/safety' },
-      { name: 'Community Guidelines', path: '/guidelines' },
-      { name: 'Contact Us', path: '/contact' },
-    ],
-    legal: [
-      { name: 'Privacy Policy', path: '/privacy' },
-      { name: 'Terms of Service', path: '/terms' },
-      { name: 'Cookie Policy', path: '/cookies' },
-      { name: 'Accessibility', path: '/accessibility' },
-    ],
-  };
-
-  const socialLinks = [
-    { icon: <Facebook size={20} />, href: '#', label: 'Facebook' },
-    { icon: <Twitter size={20} />, href: '#', label: 'Twitter' },
-    { icon: <Instagram size={20} />, href: '#', label: 'Instagram' },
-    { icon: <Linkedin size={20} />, href: '#', label: 'LinkedIn' },
-  ];
-
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Column 1: Brand and Social Links */}
+          <div>
             <Link to="/" className="text-2xl font-bold text-white mb-4 inline-block">
-              TravelBlog
+              Tanvel
             </Link>
             <p className="mt-4 text-gray-400 max-w-md">
               Discover amazing travel experiences and share your adventures with the world. Your journey begins here.
@@ -59,71 +46,23 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Company</h3>
-            <ul className="space-y-2">
-              {footerLinks.company.map((link, index) => (
-                <li key={index}>
-                  <Link to={link.path} className="text-gray-400 hover:text-white transition">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support Links */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Support</h3>
-            <ul className="space-y-2">
-              {footerLinks.support.map((link, index) => (
-                <li key={index}>
-                  <Link to={link.path} className="text-gray-400 hover:text-white transition">
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-white font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start space-x-3">
-                <MapPin size={20} className="text-purple-500 mt-1" />
-                <span>123 Travel Street, Adventure City, AC 12345</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Phone size={20} className="text-purple-500" />
-                <span>+1 (555) 123-4567</span>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Mail size={20} className="text-purple-500" />
-                <span>contact@travelblog.com</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+          {/* Column 2: Copyright and Legal Links */}
+          <div className="flex flex-col items-start md:items-end md:text-right">
+            <div className="mb-4">
+                <h3 className="text-xl font-semibold text-white mb-4">Legal</h3>
+                <ul className="space-y-2">
+                    {footerLinks.legal.map((link, index) => (
+                        <li key={index}>
+                            <Link to={link.path} className="text-gray-400 hover:text-white text-sm transition">
+                                {link.name}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <p className="text-gray-400 text-sm mt-auto md:mt-0">
               © {currentYear} TravelBlog. All rights reserved.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              {footerLinks.legal.map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  className="text-gray-400 hover:text-white text-sm transition"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
           </div>
         </div>
       </div>

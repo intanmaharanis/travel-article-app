@@ -34,6 +34,7 @@ export default function ArticleListPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [articleToDeleteId, setArticleToDeleteId] = useState<string | null>(null);
+  const [showMyArticlesOnly, setShowMyArticlesOnly] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -42,19 +43,21 @@ export default function ArticleListPage() {
   // Debounce effect for search term
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
+      if (debouncedSearchTerm !== searchTerm) {
+        setDebouncedSearchTerm(searchTerm);
+      }
     }, 500); // 500ms debounce time
 
     return () => {
       clearTimeout(handler);
     };
-  }, [searchTerm]);
+  }, [searchTerm, debouncedSearchTerm]);
 
   useEffect(() => {
     if (debouncedSearchTerm.length >= 3 || debouncedSearchTerm === '') {
-      fetchArticles(selectedCategoryId, currentPage, pageSize, debouncedSearchTerm);
+      fetchArticles(selectedCategoryId, currentPage, pageSize, debouncedSearchTerm, showMyArticlesOnly ? String(user?.id) : undefined);
     }
-  }, [fetchArticles, selectedCategoryId, currentPage, debouncedSearchTerm, pageSize]);
+  }, [fetchArticles, selectedCategoryId, currentPage, debouncedSearchTerm, pageSize, showMyArticlesOnly, user?.id]);
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -95,9 +98,7 @@ export default function ArticleListPage() {
       try {
         await deleteArticle(articleToDeleteId);
         toast.success('Article deleted successfully');
-        fetchArticles(selectedCategoryId, currentPage, pageSize, debouncedSearchTerm);
       } catch (error: any) {
-        console.error('Error deleting article:', error);
         toast.error(error.message || 'Failed to delete article');
       } finally {
         setIsDeleteDialogOpen(false);
@@ -117,9 +118,7 @@ export default function ArticleListPage() {
         toast.success('Article created successfully');
       }
       setIsModalOpen(false);
-      fetchArticles(selectedCategoryId, currentPage, pageSize, debouncedSearchTerm);
     } catch (error) {
-      console.error('Error submitting article:', error);
       toast.error('Failed to save article');
     } finally {
       setIsSubmitting(false);
@@ -157,8 +156,18 @@ export default function ArticleListPage() {
                 ))}
               </SelectContent>
             </Select>
+            {isAuthenticated && (
+            <Button
+              onClick={() => setShowMyArticlesOnly(!showMyArticlesOnly)}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-6 py-2 rounded-md"
+            >
+              {showMyArticlesOnly ? 'Show All Articles' : 'Show My Articles'}
+            </Button>
+          )}
           </div>
           
+          
+
           <Button onClick={handleCreateClick} className="bg-purple-600 hover:bg-purple-700 text-white flex items-center px-6 py-2 rounded-md">
             <PlusCircle size={20} className="mr-2" />
             Create New Article

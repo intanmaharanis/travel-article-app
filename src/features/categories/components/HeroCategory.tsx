@@ -1,4 +1,3 @@
-import React from 'react'
 import { Plane, Map, Heart } from "lucide-react";
 
 
@@ -15,7 +14,7 @@ export default function HeroCategory() {
       <div className="absolute bottom-10 right-10 opacity-20 transform -rotate-12">
         <Heart size={75} className="text-400" />
       </div>
-        <h1 className="text-5xl font-extrabold animate-fade-in-up text-teal-900">Explore Our Travel Categories</h1>
+        <h1 className="text-3xl lg:text-5xl font-extrabold animate-fade-in-up text-teal-900">Explore Our Travel Categories</h1>
       </div>
   )
 }

@@ -5,6 +5,7 @@ import type { ArticleCardProps } from '../../../types/article';
 import { formatDate } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/popover';
 import { Button } from '../../../components/ui/button';
+import { toast } from 'sonner';
 
 export default function ArticlesCard({ article, isAuthenticated, currentUserId, onEdit, onDelete }: ArticleCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -63,7 +64,13 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                     
                     {onEdit && (
                       <button
-                        onClick={() => onEdit(article.documentId)}
+                        onClick={() => {
+                          if (isAuthenticated && currentUserId === article.user?.id) {
+                            onEdit(article.documentId);
+                          } else {
+                            toast.error("Anda tidak diizinkan untuk mengubah");
+                          }
+                        }}
                         className="flex items-center p-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
                       >
                         <Edit className="mr-2 h-4 w-4" />
@@ -72,7 +79,13 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                     )}
                     {onDelete && (
                       <button
-                        onClick={() => onDelete(article.documentId)}
+                        onClick={() => {
+                          if (isAuthenticated && currentUserId === article.user?.id) {
+                            onDelete(article.documentId);
+                          } else {
+                            toast.error("Anda tidak diizinkan untuk mengubah");
+                          }
+                        }}
                         className="flex items-center p-2 text-sm text-red-600 hover:bg-red-50 rounded-md cursor-pointer"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />

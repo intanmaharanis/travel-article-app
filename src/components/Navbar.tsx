@@ -2,15 +2,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LogOut, Home, LayoutList, FileText } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
-import { useCategoryStore } from "../stores/categoryStore";
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "./ui/navigation-menu";
 import { cn } from "../lib/utils";
 
@@ -27,9 +24,8 @@ const navLinks: NavLink[] = [
 ];
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
-  const { categories, fetchAllData } = useCategoryStore();
   const location = useLocation();
   const [isTransparent, setIsTransparent] = useState(true);
 
@@ -37,7 +33,7 @@ export default function Navbar() {
 
   const handleScroll = useCallback(() => {
     if (isLandingPage) {
-      if (window.scrollY > 50) { // Adjust threshold as needed
+      if (window.scrollY > 50) {
         setIsTransparent(false);
       } else {
         setIsTransparent(true);
@@ -47,13 +43,10 @@ export default function Navbar() {
     }
   }, [isLandingPage]);
 
-  useEffect(() => {
-    fetchAllData();
-  }, [fetchAllData]);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Initial check
+    handleScroll();
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -65,6 +58,10 @@ export default function Navbar() {
     "fixed w-full z-50 transition-all duration-300",
     isTransparent ? "bg-transparent shadow-none" : "bg-white shadow-md"
   );
+
+  const handleLinkClick = () => {
+    setIsSidebarOpen(false);
+  };
 
   return (
     <nav className={navbarClasses}>
@@ -123,130 +120,101 @@ export default function Navbar() {
             )}
 
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className={cn("md:hidden inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500", isTransparent ? "text-white hover:text-gray-200 hover:bg-white/20" : "text-gray-400 hover:text-gray-500 hover:bg-gray-100")}
             >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
 
-      {isMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg py-2">
-          <div className="pt-2 pb-3 space-y-1">
-            {/* Mobile Nav Links */}
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "pl-3 pr-4 py-2 border-l-4 text-base font-medium",
-                  "flex items-center space-x-2 whitespace-nowrap",
-                  isActive(link.path)
-                    ? 'bg-purple-50 border-purple-500 text-purple-700'
-                    : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-                )}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.icon && <link.icon size={20} className="inline" />}
-                <span>{link.name}</span>
-              </Link>
-            ))}
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/articles/category/${category.name.toLowerCase()}`}
-                className={cn(
-                  "block pl-3 pr-4 py-2 border-l-4 text-base font-medium",
-                  isActive(`/articles/category/${category.name.toLowerCase()}`)
-                    ? 'bg-purple-50 border-purple-500 text-purple-700'
-                    : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
-                )}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {category.name}
-              </Link>
-            ))}
-
-            {isAuthenticated ? (
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <div className="flex items-center px-4">
-                  <div className="flex-shrink-0">
-                    <User size={24} className="text-gray-500" />
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800">{user?.username}</div>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1">
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="pt-4 pb-3 border-t border-gray-200">
-                <div className="space-y-1">
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Register
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out",
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        <div className="flex justify-end p-4">
+          <button
+            onClick={() => setIsSidebarOpen(false)}
+            className="text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <X size={24} />
+          </button>
         </div>
-      )}
+        <div className="pt-2 pb-3 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={cn(
+                "block pl-3 pr-4 py-2 border-l-4 text-base font-medium",
+                "flex items-center space-x-2 whitespace-nowrap",
+                isActive(link.path)
+                  ? 'bg-purple-50 border-purple-500 text-purple-700'
+                  : 'border-transparent text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+              )}
+              onClick={handleLinkClick}
+            >
+              {link.icon && <link.icon size={20} className="inline" />}
+              <span>{link.name}</span>
+            </Link>
+          ))}
+    
+
+          {isAuthenticated ? (
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              <div className="flex items-center px-4">
+                <div className="flex-shrink-0">
+                  <User size={24} className="text-gray-500" />
+                </div>
+                <div className="ml-3">
+                  <div className="text-base font-medium text-gray-800">{user?.username}</div>
+                </div>
+              </div>
+              <div className="mt-3 space-y-1">
+                <button
+                  onClick={() => {
+                    logout();
+                    handleLinkClick();
+                  }}
+                  className="block w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-4 pb-3 border-t border-gray-200">
+              <div className="space-y-1">
+                <Link
+                  to="/login"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="block px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
+                >
+                  Register
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Overlay */}
+      {/* {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )} */}
     </nav>
   );
-}
-
-interface ListItemProps extends React.ComponentPropsWithoutRef<"a"> {
-  title: string;
-  href: string;
-}
-
-const ListItem = React.forwardRef<React.ElementRef<"a">, ListItemProps>(
-  ({ className, title, children, href, ...props }, ref) => {
-    return (
-      <li>
-        <NavigationMenuLink asChild>
-          <Link
-            ref={ref}
-            to={href}
-            className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-              className
-            )}
-            {...props}
-          >
-            <div className="text-sm font-medium leading-none">{title}</div>
-            {children && (
-              <p className="text-muted-foreground text-sm leading-snug line-clamp-2">
-                {children}
-              </p>
-            )}
-          </Link>
-        </NavigationMenuLink>
-      </li>
-    )
-  }
-)
-ListItem.displayName = "ListItem" 
+} 

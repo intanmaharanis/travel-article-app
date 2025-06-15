@@ -1,4 +1,3 @@
-import React from 'react';
 import { Facebook, Instagram, Share2 } from 'lucide-react';
 
 interface UserSocialShareProps {
