@@ -50,9 +50,10 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
         totalArticles: meta?.pagination?.total || 0,
         totalPages: meta?.pagination?.pageCount || 0,
       });
-    } catch (err: any) {
-      set({ error: err.message || 'Failed to fetch articles.' });
-      toast.error(err.message || 'Failed to fetch articles.');
+    } catch (err: unknown) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Failed to fetch articles.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     } finally {
       set({ loading: false });
     }
@@ -64,9 +65,10 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
       const response = await articleApi.getArticleById(id);
       const article = (response as ApiResponse<Article>).data;
       set({ currentArticle: article });
-    } catch (err: any) {
-      set({ error: err.message || 'Failed to fetch article details.' });
-      toast.error(err.message || 'Failed to fetch article details.');
+    } catch (err: unknown) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Failed to fetch article details.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     } finally {
       set({ loading: false });
     }
@@ -82,9 +84,10 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
         totalArticles: state.totalArticles + 1,
       }));
       toast.success('Article created successfully!');
-    } catch (err: any) {
-      set({ error: err.message || 'Failed to create article.' });
-      toast.error(err.message || 'Failed to create article.');
+    } catch (err: unknown) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Failed to create article.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     }
   },
 
@@ -99,9 +102,10 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
         ),
       }));
       toast.success('Article updated successfully!');
-    } catch (err: any) {
-      set({ error: err.message || 'Failed to update article.' });
-      toast.error(err.message || 'Failed to update article.');
+    } catch (err: unknown) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Failed to update article.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     }
   },
 
@@ -114,9 +118,10 @@ export const useArticleStore = create<ArticleStore>((set, get) => ({
         totalArticles: state.totalArticles - 1,
       }));
       toast.success('Article deleted successfully!');
-    } catch (err: any) {
-      set({ error: err.message || 'Failed to delete article.' });
-      toast.error(err.message || 'Failed to delete article.');
+    } catch (err: unknown) {
+      const errorMessage = (err instanceof Error) ? err.message : 'Failed to delete article.';
+      set({ error: errorMessage });
+      toast.error(errorMessage);
     }
   },
 

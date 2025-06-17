@@ -17,8 +17,6 @@ interface CategoryCardProps {
 const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onDelete, isAuthenticated }) => {
   const [showConfirmDelete, setShowConfirmDelete] = React.useState(false);
 
-
-
   return (
     <div className="flex flex-col items-start p-6 rounded-xl bg-teal-900 text-white shadow-lg relative transform transition-transform duration-300 hover:scale-105">
       <div className="mb-4">
@@ -28,7 +26,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onD
       <p className="text-sm text-gray-300 mb-4 text-justify">{category.description}</p>
 
        
-        { isAuthenticated && (
+        {isAuthenticated && onEdit && (
         <div className="absolute top-4 right-4">
           <Popover>
             <PopoverTrigger asChild>
@@ -38,7 +36,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onD
             </PopoverTrigger>
             <PopoverContent className="w-40 p-1 bg-white shadow-lg rounded-md">
               <div className="grid gap-1">
-                {onEdit && (
+                
                   <button
                     onClick={() => onEdit(category)}
                     className="flex items-center p-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer"
@@ -46,8 +44,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onD
                     <Edit className="mr-2 h-4 w-4" />
                     Edit
                   </button>
-                )}
-                {onDelete && (
+              
+              
                   <button
                     onClick={() => {
                       setShowConfirmDelete(true);
@@ -57,7 +55,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, Icon, onEdit, onD
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
                   </button>
-                )}
+              
               </div>
             </PopoverContent>
           </Popover>

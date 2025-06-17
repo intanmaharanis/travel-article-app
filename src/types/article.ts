@@ -23,8 +23,7 @@ export interface Article {
 
 export interface ArticleCardProps {
   article: Article;
-  isFeatured?: boolean;
-  isAuthenticated?: boolean;
+  isAuthenticated: boolean;
   currentUserId?: number;
   onEdit?: (articleId: string) => void;
   onDelete?: (articleId: string) => void;

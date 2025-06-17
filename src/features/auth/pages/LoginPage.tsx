@@ -10,7 +10,7 @@ export default function LoginPage() {
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
       <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/50 to-transparent z-10" />
-      <div className="relative z-20 w-full max-w-md md:w-6/12 bg-white/80 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-white/40">
+      <div className="relative z-20 w-full mx-4 md:max-w-md md:w-6/12 bg-white/80 backdrop-blur-md px-4 py-8 lg:p-8 rounded-2xl shadow-2xl border border-white/40">
         <h2 className="text-3xl font-bold text-center mb-6 text-[#4158D0] drop-shadow">Welcome Back!</h2>
         <p className="text-center text-gray-700 mb-8">Sign in to your Travel Article App account</p>
         <LoginForm />

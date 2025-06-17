@@ -1,12 +1,13 @@
 import  { useEffect } from "react";
 import { useArticleStore } from "../../../stores/articleStore";
 import { useCategoryStore } from "../../../stores/categoryStore";
-import { Plane, Map, Heart } from "lucide-react";
+import { Plane, Map, Heart, ArrowRight } from "lucide-react";
 import ArticlesCard from "../../articles/components/ArticlesCard";
 
-export default function DestinationSection() {
+export default function DestinationSection({isAuthenticated} : {isAuthenticated:boolean;}) {
   const { articles, fetchArticles } = useArticleStore();
   const {  fetchAllData: fetchCategories } = useCategoryStore();
+  
 
   useEffect(() => {
     fetchArticles();
@@ -38,12 +39,16 @@ export default function DestinationSection() {
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {displayedArticles.map((article,i) => (
-              <ArticlesCard article={article} key={i}/>
+              <ArticlesCard article={article} key={i} isAuthenticated={isAuthenticated}/>
             ))}
           </div>
-
-          
         </div>
+        <div className="flex justify-center mt-10 ">
+            <a href="/articles" className="p-3 text-lime-800 hover:text-purple-800 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
+              View More <ArrowRight className="ml-1 w-4 h-4" />
+            </a>
+            
+          </div>
       </div>
     </section>
   );

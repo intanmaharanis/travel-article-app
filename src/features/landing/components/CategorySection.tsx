@@ -3,11 +3,9 @@ import { useCategoryStore } from "../../../stores/categoryStore";
 import CategoryCard from "../../categories/components/CategoryCard";
 import { getRandomIcon } from "../../../constants/icons";
 import { ArrowRight } from 'lucide-react';
-import { useAuth } from "../../../hooks/useAuth";
 
-export default function CategorySection() {
+export default function CategorySection({isAuthenticated} : {isAuthenticated: boolean}) {
   const { categories, fetchAllData } = useCategoryStore();
-  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -34,7 +32,6 @@ export default function CategorySection() {
             <a href="/categories" className="p-3 text-lime-800 hover:text-lime-600 transition flex items-center">
               View More <ArrowRight className="ml-1 w-4 h-4" />
             </a>
-            
           </div>
         </div>
 

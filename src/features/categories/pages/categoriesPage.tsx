@@ -1,20 +1,22 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { useCategoryStore } from '../../../stores/categoryStore';
 import CategoryCard from '../components/CategoryCard';
 import { getRandomIcon } from '../../../constants/icons';
 import HeroCategory from '../components/HeroCategory';
 import { Button } from '../../../components/ui/button';
 import { Plus,  Loader2Icon } from 'lucide-react';
-import CategoryFormModal, { type CategoryFormValues } from '../components/CategoryFormModal';
-import type { Category } from '../../../types/category';
+import type { Category, CategoryFormValues } from '../../../types/category';
 import { toast } from "sonner";
-import { useAuth } from '../../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../hooks/useAuth';
+
+const CategoryFormModal = React.lazy(() => import('../components/CategoryFormModal'));
 
 export default function CategoriesPage() {
   const { categories, fetchAllData, loading, createCategory, updateCategory, deleteCategory } = useCategoryStore();
-  const { isAuthenticated } = useAuth();
+  const {isAuthenticated} = useAuth();
   const navigate = useNavigate();
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -42,9 +44,9 @@ export default function CategoriesPage() {
     try {
       await deleteCategory(categoryId);
       toast.success('Category deleted successfully');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error deleting category:", error);
-      toast.error(error.message || 'Failed to delete category.');
+      toast.error((error instanceof Error) ? error.message : 'Failed to delete category.');
     }
   };
 
@@ -57,9 +59,9 @@ export default function CategoriesPage() {
         await createCategory(data.name, data.description);
       }
       setIsModalOpen(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving category:", error);
-      toast.error(error.message || 'Failed to save category.');
+      toast.error((error instanceof Error) ? error.message : 'Failed to save category.');
     } finally {
       setIsSubmitting(false);
     }
@@ -102,15 +104,17 @@ export default function CategoriesPage() {
         )}
       </div>
 
-      <CategoryFormModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingCategory(null);
-        } }
-        editingCategory={editingCategory}
-        onSubmit={handleModalSubmit}
-        isSubmitting={isSubmitting} loading={false}      />
+      <Suspense fallback={<div>Loading Category Form...</div>}>
+        <CategoryFormModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setEditingCategory(null);
+          } }
+          editingCategory={editingCategory}
+          onSubmit={handleModalSubmit}
+          isSubmitting={isSubmitting} loading={false}      />
+      </Suspense>
     </div>
   )
 }

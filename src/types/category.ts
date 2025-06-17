@@ -7,4 +7,9 @@ export interface Category {
   updatedAt?: string;
   publishedAt?: string;
   locale?: string | null;
+}
+
+export interface CategoryFormValues {
+  name: string;
+  description: string;
 } 

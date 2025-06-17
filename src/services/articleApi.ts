@@ -1,8 +1,8 @@
 import { API_BASE_URL, handleResponse, type ApiResponse, type CreateArticlePayload, type UpdateArticlePayload, getAuthHeaders } from './api';
-import type { Category } from '../types/category';
+import type { Article } from '../types/article';
 
 export const articleApi = {
-  async getArticles(categoryName?: string, page: number = 1, pageSize: number = 10, searchTerm?: string, userId?: string): Promise<ApiResponse<any[]>> {
+  async getArticles(categoryName?: string, page: number = 1, pageSize: number = 10, searchTerm?: string, userId?: string): Promise<ApiResponse<Article[]>> {
     let url = `${API_BASE_URL}/api/articles?pagination[page]=${page}&pagination[pageSize]=${pageSize}&populate=*`;
 
     if (categoryName) {
@@ -21,70 +21,39 @@ export const articleApi = {
     const res = await fetch(url, {
       headers: getAuthHeaders(),
     });
-    return handleResponse<ApiResponse<any[]>>(res);
+    return handleResponse<ApiResponse<Article[]>>(res);
   },
 
-  async getCategories(): Promise<ApiResponse<Category[]>> {
-    const res = await fetch(`${API_BASE_URL}/api/categories`);
-    return handleResponse<ApiResponse<Category[]>>(res);
-  },
-
-  async getArticleById(id: string): Promise<ApiResponse<any>> {
+  async getArticleById(id: string): Promise<ApiResponse<Article>> {
     const res = await fetch(`${API_BASE_URL}/api/articles/${id}?populate=*`, {
       headers: getAuthHeaders()
     });
-    return handleResponse<ApiResponse<any>>(res);
+    return handleResponse<ApiResponse<Article>>(res);
   },
 
-  async createArticle(payload: CreateArticlePayload): Promise<any> {
+  async createArticle(payload: CreateArticlePayload): Promise<ApiResponse<Article>> {
     const res = await fetch(`${API_BASE_URL}/api/articles`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ data: payload }),
     });
-    return handleResponse<any>(res);
+    return handleResponse<ApiResponse<Article>>(res);
   },
 
-  async updateArticle(id: string, payload: UpdateArticlePayload): Promise<any> {
+  async updateArticle(id: string, payload: UpdateArticlePayload): Promise<ApiResponse<Article>> {
     const res = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify({ data: payload }),
     });
-    return handleResponse<any>(res);
+    return handleResponse<ApiResponse<Article>>(res);
   },
 
-  async deleteArticle(id: string): Promise<any> {
+  async deleteArticle(id: string): Promise<ApiResponse<object>> {
     const res = await fetch(`${API_BASE_URL}/api/articles/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
-    return handleResponse<any>(res);
-  },
-
-  async createCategory(payload: { name: string; description: string }): Promise<ApiResponse<Category>> {
-    const res = await fetch(`${API_BASE_URL}/api/categories`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ data: payload }),
-    });
-    return handleResponse<ApiResponse<Category>>(res);
-  },
-
-  async updateCategory(id: string, payload: { name?: string; description?: string }): Promise<ApiResponse<Category>> {
-    const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
-      method: 'PUT',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ data: payload }),
-    });
-    return handleResponse<ApiResponse<Category>>(res);
-  },
-
-  async deleteCategory(id: string): Promise<any> {
-    const res = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
-    return handleResponse<any>(res);
+    return handleResponse<ApiResponse<object>>(res);
   },
 }; 

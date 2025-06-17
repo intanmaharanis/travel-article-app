@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../../components/ui/
 import { Button } from '../../../components/ui/button';
 import { toast } from 'sonner';
 
-export default function ArticlesCard({ article, isAuthenticated, currentUserId, onEdit, onDelete }: ArticleCardProps) {
+export default function ArticlesCard({ article, currentUserId, onEdit, onDelete, isAuthenticated }: ArticleCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
               <p className='text-sm text-grey-600'> {article.comments.length} comments</p>
               </div>
               {
-                isAuthenticated && (
+                isAuthenticated && onEdit && onDelete && (
                   <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" className="h-8 w-8 p-0">
@@ -62,7 +62,6 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                 <PopoverContent className="w-40 p-1">
                   <div className="grid gap-1">
                     
-                    {onEdit && (
                       <button
                         onClick={() => {
                           if (isAuthenticated && currentUserId === article.user?.id) {
@@ -76,8 +75,7 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </button>
-                    )}
-                    {onDelete && (
+                    
                       <button
                         onClick={() => {
                           if (isAuthenticated && currentUserId === article.user?.id) {
@@ -91,7 +89,7 @@ export default function ArticlesCard({ article, isAuthenticated, currentUserId, 
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </button>
-                    )}
+                    
                   </div>
                 </PopoverContent>
               </Popover>
