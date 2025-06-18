@@ -3,6 +3,7 @@ import { useArticleStore } from "../../../stores/articleStore";
 import { useCategoryStore } from "../../../stores/categoryStore";
 import { Plane, Map, Heart, ArrowRight } from "lucide-react";
 import ArticlesCard from "../../articles/components/ArticlesCard";
+import { Link } from 'react-router-dom';
 
 export default function DestinationSection({isAuthenticated} : {isAuthenticated:boolean;}) {
   const { articles, fetchArticles } = useArticleStore();
@@ -44,9 +45,9 @@ export default function DestinationSection({isAuthenticated} : {isAuthenticated:
           </div>
         </div>
         <div className="flex justify-center mt-10 ">
-            <a href="/articles" className="p-3 text-lime-800 hover:text-purple-800 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
+            <Link to="/articles" className="p-3 text-lime-800 hover:text-purple-800 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center">
               View More <ArrowRight className="ml-1 w-4 h-4" />
-            </a>
+            </Link>
             
           </div>
       </div>

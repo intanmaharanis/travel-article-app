@@ -3,6 +3,7 @@ import { useCategoryStore } from "../../../stores/categoryStore";
 import CategoryCard from "../../categories/components/CategoryCard";
 import { getRandomIcon } from "../../../constants/icons";
 import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function CategorySection({isAuthenticated} : {isAuthenticated: boolean}) {
   const { categories, fetchAllData } = useCategoryStore();
@@ -29,9 +30,9 @@ export default function CategorySection({isAuthenticated} : {isAuthenticated: bo
             </p>
           </div>
           <div className="flex space-x-2">
-            <a href="/categories" className="p-3 text-lime-800 hover:text-lime-600 transition flex items-center">
+            <Link to="/categories" className="p-3 text-lime-800 hover:text-lime-600 transition flex items-center">
               View More <ArrowRight className="ml-1 w-4 h-4" />
-            </a>
+            </Link>
           </div>
         </div>
 
